@@ -5,6 +5,7 @@ import (
     "log/slog"
 
     "github.com/solloball/sso/internal/config"
+    "github.com/solloball/sso/internal/app"
 )
 
 const (
@@ -20,9 +21,15 @@ func main() {
     log := setupLogger(cfg.Env)
 
     log.Info("starting application", slog.String("env", cfg.Env))
-    //TODO:: init logger
 
-    //TODO:: init app
+    application := app.New(
+        log,
+        cfg.GRPC.Port,
+        cfg.StoragePath,
+        cfg.TokenTTL,
+    )
+
+    application.GRPCApp.MustRun()
 
     //TODO:: run grpc service
 }
