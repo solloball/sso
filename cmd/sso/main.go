@@ -2,6 +2,8 @@ package main
 
 import (
     "os"
+    "os/signal"
+    "syscall"
     "log/slog"
 
     "github.com/solloball/sso/internal/config"
@@ -29,9 +31,18 @@ func main() {
         cfg.TokenTTL,
     )
 
-    application.GRPCApp.MustRun()
+    go application.GRPCApp.MustRun()
 
-    //TODO:: run grpc service
+    stop := make(chan os.Signal, 1)
+    signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+    sig := <-stop
+
+    log.Info("application start to stop", slog.String("signal", sig.String()))
+
+    application.GRPCApp.Stop()
+
+    log.Info("application stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
