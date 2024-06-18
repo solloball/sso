@@ -1,9 +1,13 @@
 module github.com/solloball/sso
 
-go 1.21.6
+go 1.22
+
+toolchain go1.22.4
 
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
+	github.com/brianvoe/gofakeit/v7 v7.0.3 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
 	github.com/golang-migrate/migrate/v3 v3.5.2 // indirect
@@ -13,7 +17,9 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/solloball/contract v0.0.0-20240616061125-dc1113654281 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/crypto v0.24.0 // indirect

@@ -45,7 +45,7 @@ func (s *serverAPI) Login(
     req *ssov1.LoginRequest,
 ) (*ssov1.LoginResponse, error) {
     if err := validateDataLogin(req); err != nil {
-        return nil, status.Error(codes.InvalidArgument, err.Error())
+        return nil, err
     }
 
     token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()));
@@ -66,7 +66,7 @@ func (s *serverAPI) Register(
     req *ssov1.RegisterRequest,
 ) (*ssov1.RegisterResponse, error) {
     if err := validateDataRegister(req); err != nil {
-        return nil, status.Error(codes.InvalidArgument, err.Error())
+        return nil, err
     }
 
     userID, err := s.auth.Register(ctx, req.GetEmail(), req.GetPassword())
@@ -87,7 +87,7 @@ func (s *serverAPI) IsAdmin(
     req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
     if err := validateDataIsAdmin(req); err != nil {
-        return nil, status.Error(codes.InvalidArgument, err.Error())
+        return nil, err
     }
 
     res, err := s.auth.IsAdmin(ctx, req.GetUserId())
@@ -113,7 +113,7 @@ func validateDataLogin(req *ssov1.LoginRequest) error {
     }
 
     if req.GetAppId() == emptyValue {
-        return status.Error(codes.InvalidArgument, "add_id is required")
+        return status.Error(codes.InvalidArgument, "app_id is required")
     }
 
     return nil
