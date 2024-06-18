@@ -18,7 +18,7 @@ type Storage struct {
 func New(storagePath string) (*Storage, error) {
     const op = "storage.sqlite.New"
 
-    db, err := sql.Open("sqlite", storagePath)
+    db, err := sql.Open("sqlite3", storagePath)
     if err != nil {
         return nil, fmt.Errorf("%s: :%w", op, err) 
     }
@@ -109,4 +109,31 @@ func (s *Storage) IsAdmin(ctx context.Context, userID int64) (bool, error) {
     }
 
     return res, nil
+}
+
+func (s *Storage) App(ctx context.Context, id int) (models.App, error) {
+	const op = "storage.sqlite.App"
+
+	stmt, err := s.db.Prepare(`
+        SELECT id, name, secret
+        FROM apps
+        WHERE id = ?`,
+    )
+	if err != nil {
+		return models.App{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	row := stmt.QueryRowContext(ctx, id)
+
+	var res models.App
+	err = row.Scan(&res.ID, &res.Name, &res.Secret)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.App{}, fmt.Errorf("%s: %w", op, storage.ErrAppNotFound)
+		}
+
+		return models.App{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return res, nil
 }

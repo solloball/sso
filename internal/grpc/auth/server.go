@@ -2,12 +2,14 @@ package auth
 
 import (
     "context"
+    "errors"
 
     "google.golang.org/grpc"
     "google.golang.org/grpc/status"
     "google.golang.org/grpc/codes"
 
     ssov1 "github.com/solloball/contract/gen/go/sso"
+    "github.com/solloball/sso/internal/services/auth"
 )
 
 type Auth interface {
@@ -18,10 +20,11 @@ type Auth interface {
         appID int,
     ) (token string, err error)
     Register(
+        ctx context.Context,
         email string,
         password string,
     ) (userID int64, err error)
-    IsAdmin(userID int64) (res bool, err error)
+    IsAdmin(ctx context.Context, userID int64) (res bool, err error)
 }
 
 type serverAPI struct {
@@ -47,7 +50,9 @@ func (s *serverAPI) Login(
 
     token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()));
     if err != nil {
-        // TODO:: handle error
+        if errors.Is(err, auth.ErrInvalidData) {
+            return nil, status.Error(codes.InvalidArgument, "invalid argument")
+        }
         return nil, status.Error(codes.Internal, "internal error")
     }
 
@@ -64,9 +69,11 @@ func (s *serverAPI) Register(
         return nil, status.Error(codes.InvalidArgument, err.Error())
     }
 
-    userID, err := s.auth.Register(req.GetEmail(), req.GetPassword())
+    userID, err := s.auth.Register(ctx, req.GetEmail(), req.GetPassword())
     if err != nil {
-        // TODO:: handle error
+        if errors.Is(err, auth.ErrInvalidData) {
+            return nil, status.Error(codes.AlreadyExists, "already exists")
+        }
         return nil, status.Error(codes.Internal, "internal error")
     }
 
@@ -83,9 +90,11 @@ func (s *serverAPI) IsAdmin(
         return nil, status.Error(codes.InvalidArgument, err.Error())
     }
 
-    res, err := s.auth.IsAdmin(req.GetUserId())
+    res, err := s.auth.IsAdmin(ctx, req.GetUserId())
     if err != nil {
-        // TODO:: handle error
+        if errors.Is(err, auth.ErrInvalidData) {
+            return nil, status.Error(codes.NotFound, "not found")
+        }
         return nil, status.Error(codes.Internal, "internal error")
     }
 
