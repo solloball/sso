@@ -33,7 +33,7 @@ func (s *Storage) SaveUser(
 ) (uid int64, err error) {
     const op = "storage.sqlite.SaveUser"
 
-    stmt, err := s.db.Prepare("INSERT INTO users(email, passHash) VALUES (?,?)")
+    stmt, err := s.db.Prepare("INSERT INTO users(email, pass_hash) VALUES (?,?)")
     if err != nil {
         return 0, fmt.Errorf("%s: %w", op, err)
     }
