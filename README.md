@@ -3,9 +3,9 @@ SSO service with grpc on go
 There are three services
 1. Auth service (in testing)
   There are three handlers:
-  1. IsAdmin
-  2. Login
-  3. Register
+  * IsAdmin
+  * Login
+  * Register
 5. Permision service (coming soon)
 6. User info service (coming soon)
 
